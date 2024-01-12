@@ -2,7 +2,6 @@
 {
 	public class MailMessage
 	{
-		private readonly Dictionary<string,string> mergeFields;
 		private readonly string body;
 		private readonly string subject;
 		private readonly string toEmails; // ',' delimited
@@ -19,10 +18,8 @@
 		];
 
 
-		public MailMessage(IMergeable mergeObj, string body, string subject, string toEmails, bool isHtml = true, List<Attachment>? attachments = null)
+		public MailMessage(IMergeable mergeObj, string template, string subject, string toEmails, bool isHtml = true, List<Attachment>? attachments = null)
 		{
-			mergeFields = mergeObj.MergeFields();
-			this.body = body;
 			this.subject = subject;
 			this.toEmails = toEmails;
 			this.isHtml = isHtml;
@@ -31,6 +28,7 @@
 			TimeZoneInfo pstZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
 			DateTime pstNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, pstZone);
 
+			var mergeFields = mergeObj.MergeFields();
 			mergeFields.Add("DateNow", pstNow.ToShortDateString());
 			mergeFields.Add("TimeNow", pstNow.ToLongTimeString() + (pstZone.IsDaylightSavingTime(pstNow) ? " PDT" : " PST"));
 			mergeFields.Add("Title", subject);
@@ -38,17 +36,19 @@
 			//mergeFields.Add("LogLevelName", model.LevelName ?? "Missing");
 			mergeFields.Add("LogLevelColor", levelColors[1]);
 		
+
 			// Render Body ***
 
-			if (String.IsNullOrWhiteSpace(body))
-				throw new ArgumentNullException(nameof(body));
+			if (String.IsNullOrWhiteSpace(template))
+				throw new ArgumentNullException(nameof(template));
 
 			foreach (var r in mergeFields)
-				body = body.Replace("[" + r.Key + "]", r.Value);
+				template = template.Replace("[" + r.Key + "]", r.Value);
 
-			if (body.Contains('[') || body.Contains(']'))
+			if (template.Contains('[') || template.Contains(']'))
 				throw new ArgumentException("Not all fields replaced ('[' or ']' found).");
 
+			body = template;
 		}
 
 		// *** properties ***

@@ -1,4 +1,7 @@
-﻿namespace Mailer.Runner.Run.IqaInvestors;
+﻿using System.Web;
+using System;
+
+namespace Mailer.Runner.Run.IqaInvestors;
 
 public class IqaInvestorModel : IMergeable
 {
@@ -17,7 +20,8 @@ public class IqaInvestorModel : IMergeable
 			{ "TotalShares", TotalShares.ToString("n0") },
 			{ "TotalCash", TotalCash.ToString("c0") },
 			{ "Email", Email },
-			{ "FirstName", FirstName }
+			{ "FirstName", FirstName },
+			{ "EmailUrl", HttpUtility.UrlEncode(Email) }
 		};
 	}
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

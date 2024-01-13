@@ -7,12 +7,8 @@ namespace Mailer.Runner.Db
 {
 	internal class ReadDb
 	{
-		readonly string cs = "Data Source=localhost;Initial Catalog=TestingPocos;Integrated Security=True;Trust Server Certificate=True";
-		public ReadDb()
-		{
-
-		}
-
+		private readonly string cs = "Data Source=localhost;Initial Catalog=TestingPocos;Integrated Security=True;Trust Server Certificate=True";
+		
 		public List<IqaInvestorModel> GetIqaInvestors()
 		{
 			List<IqaInvestorModel> lst = [];
@@ -31,8 +27,10 @@ namespace Mailer.Runner.Db
 					TotalShares,
 					TotalCash,
 					Email,
-					FirstName
-				FROM [TestingPocos].[dbo].[IqaInvestors];
+					DearName
+				FROM [TestingPocos].[dbo].[IqaInvestors]
+				WHERE
+					(IsSend = 1);
 				""";
 
 			SqlDataReader reader = command.ExecuteReader();
@@ -46,7 +44,7 @@ namespace Mailer.Runner.Db
 					TotalShares = reader.GetInt32("TotalShares"),
 					TotalCash = reader.GetDouble("TotalCash"),
 					Email = reader.GetString("Email"),
-					FirstName = reader.GetString("FirstName")
+					DearName = reader.GetString("DearName")
 				};
 				lst.Add(item);
 			}

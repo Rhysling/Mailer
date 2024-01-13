@@ -38,10 +38,5 @@ foreach (var inv in investors)
 }
 
 
-
-
-//Console.WriteLine($"From: {settings?.Mailgun.FromDomain ?? "missing"}");
-//Console.WriteLine($"Auth: {settings?.Mailgun.AuthValue ?? "missing"}");
-
 Console.WriteLine("Done.");
 Console.ReadKey();

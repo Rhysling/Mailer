@@ -11,7 +11,7 @@ public class IqaInvestorModel : IMergeable
 	public int TotalShares { get; set; }
 	public double TotalCash { get; set; }
 	public string Email { get; set; }
-	public string FirstName { get; set; }
+	public string DearName { get; set; }
 
 	public Dictionary<string, string> MergeFields()
 	{
@@ -20,7 +20,7 @@ public class IqaInvestorModel : IMergeable
 			{ "TotalShares", TotalShares.ToString("n0") },
 			{ "TotalCash", TotalCash.ToString("c0") },
 			{ "Email", Email },
-			{ "FirstName", FirstName },
+			{ "DearName", DearName },
 			{ "EmailUrl", HttpUtility.UrlEncode(Email) }
 		};
 	}

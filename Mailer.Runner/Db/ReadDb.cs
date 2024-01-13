@@ -15,7 +15,7 @@ namespace Mailer.Runner.Db
 
 		public List<IqaInvestorModel> GetIqaInvestors()
 		{
-			List<IqaInvestorModel> lst = new();
+			List<IqaInvestorModel> lst = [];
 
 			using var connection = new SqlConnection(cs);
 			connection.Open();
@@ -39,13 +39,15 @@ namespace Mailer.Runner.Db
 
 			while (reader.Read())
 			{
-				IqaInvestorModel item = new();
-				item.Seq = reader.GetInt32("Seq");
-				item.StakeholderName = reader.GetString("StakeholderName");
-				item.TotalShares = reader.GetInt32("TotalShares");
-				item.TotalCash = reader.GetDouble("TotalCash");
-				item.Email = reader.GetString("Email");
-				item.FirstName = reader.GetString("FirstName");
+				IqaInvestorModel item = new()
+				{
+					Seq = reader.GetInt32("Seq"),
+					StakeholderName = reader.GetString("StakeholderName"),
+					TotalShares = reader.GetInt32("TotalShares"),
+					TotalCash = reader.GetDouble("TotalCash"),
+					Email = reader.GetString("Email"),
+					FirstName = reader.GetString("FirstName")
+				};
 				lst.Add(item);
 			}
 

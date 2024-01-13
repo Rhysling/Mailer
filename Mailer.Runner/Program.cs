@@ -8,8 +8,10 @@ IConfigurationRoot config = new ConfigurationBuilder()
 	.Build();
 
 AppSettings? settings = config.Get<AppSettings>();
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
 string fromDomain = settings?.Mailgun.FromDomain ?? throw new ArgumentNullException(nameof(fromDomain));
 string authValue = settings?.Mailgun.AuthValue ?? throw new ArgumentNullException(nameof(authValue));
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
 
 string msgFullPath = @"D:\UserData\Documents\AppDev\Mailer\Mailer.Runner\Run\IqaInvestors\MessageText.html";

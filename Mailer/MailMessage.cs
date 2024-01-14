@@ -17,7 +17,15 @@ public class MailMessage
 		"#d953ad"  //Fatal = 4
 	];
 
-	public MailMessage(IMergeable mergeObj, string template, string subject, string toEmails, bool isHtml = true, List<Attachment>? attachments = null)
+	public MailMessage(
+		IMergeable mergeObj,
+		string template,
+		string subject,
+		string toEmails,
+		bool isHtml = true,
+		List<Attachment>? attachments = null,
+		bool isTesting = false
+	)
 	{
 		if (String.IsNullOrWhiteSpace(template))
 			throw new ArgumentNullException(nameof(template));
@@ -28,7 +36,7 @@ public class MailMessage
 		if (String.IsNullOrWhiteSpace(toEmails))
 			throw new ArgumentNullException(nameof(toEmails));
 
-		this.subject = subject;
+		this.subject = isTesting ? $"TESTING -- {subject}" : subject;
 		this.toEmails = toEmails;
 		this.isHtml = isHtml;
 		this.attachments = attachments ?? [];
@@ -40,7 +48,12 @@ public class MailMessage
 		mergeFields.Add("DateNow", pstNow.ToShortDateString());
 		mergeFields.Add("TimeNow", pstNow.ToLongTimeString() + (pstZone.IsDaylightSavingTime(pstNow) ? " PDT" : " PST"));
 		mergeFields.Add("Title", subject);
-		mergeFields.Add("LogLevelColor", levelColors[1]);	
+		mergeFields.Add("LogLevelColor", levelColors[1]);
+
+		string testingMsg = isTesting
+			? """<p style="font-size:1.5em;font-weight:bold;color:red;margin:1em 0 1em 0;text-align:center;">* * * TEST MESSAGE * * *</p>"""
+			: "";
+		mergeFields.Add("TestingMsg", testingMsg);
 
 		// Render Body ***
 

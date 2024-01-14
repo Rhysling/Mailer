@@ -17,6 +17,8 @@ string authValue = settings?.Mailgun.AuthValue ?? throw new ArgumentNullExceptio
 string msgFullPath = @"D:\UserData\Documents\AppDev\Mailer\Mailer.Runner\Run\IqaInvestors\MessageText.html";
 string msgHtml = File.ReadAllText(msgFullPath);
 string subject = "IQ-Analog Investor Notice";
+bool isHtml = true;
+bool isTesting = true;
 
 
 List<Attachment> attachments = [
@@ -32,7 +34,7 @@ var investors = db.GetIqaInvestors();
 
 foreach (var inv in investors)
 {
-	var m = new MailMessage(inv, msgHtml, subject, inv.Email, isHtml: true, attachments);
+	var m = new MailMessage(inv, msgHtml, subject, inv.Email, isHtml, attachments, isTesting);
 	var res = await mgs.SendAsync(m);
 	Console.WriteLine($"Email: {inv.Email}; Result: {res.StatusCode}");
 }

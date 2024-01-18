@@ -60,8 +60,8 @@ public class MailMessage
 		foreach (var r in mergeFields)
 			template = template.Replace($"[{r.Key}]", r.Value);
 
-		if (template.Contains('[') || template.Contains(']'))
-			throw new ArgumentException("Not all fields replaced ('[' or ']' found).");
+		//if (template.Contains('[') || template.Contains(']'))
+		//	throw new ArgumentException("Not all fields replaced ('[' or ']' found).");
 
 		body = template;
 	}

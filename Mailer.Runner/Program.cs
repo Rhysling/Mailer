@@ -1,6 +1,7 @@
 ﻿using Mailer;
 using Mailer.Runner;
-using Mailer.Runner.Db;
+using Mailer.Runner.Run.IqaInvestors;
+using Mailer.Runner.Run.TestMail;
 using Microsoft.Extensions.Configuration;
 
 IConfigurationRoot config = new ConfigurationBuilder()
@@ -14,31 +15,10 @@ string authValue = settings?.Mailgun.AuthValue ?? throw new ArgumentNullExceptio
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
 
-string msgFullPath = @"D:\UserData\Documents\AppDev\Mailer\Mailer.Runner\Run\IqaInvestors\MessageText.html";
-string msgHtml = File.ReadAllText(msgFullPath);
-string subject = "IQ-Analog Investor Notice";
-bool isHtml = true;
-bool isTesting = true;
+//RunIqaInvestors runner = new(fromDomain, authValue);
+RunTest runner = new(fromDomain, authValue);
 
-
-List<Attachment> attachments = [
-	new(@"D:\UserData\Documents\AppDev\Mailer\Mailer.Runner\Attachments\ARC - IQA Agreement and Consent to Surrender Collateral_EXECUTED .pdf"),
-	new(@"D:\UserData\Documents\AppDev\Mailer\Mailer.Runner\Attachments\IQANALOGCORPORATION-CA-Filed and Approved by Ca Secretary of State.pdf")
-];
-
-var mgs = new MailgunService("noreply@american-research-capital.net", fromDomain, authValue);
-
-
-var db = new ReadDb();
-var investors = db.GetIqaInvestors();
-
-foreach (var inv in investors)
-{
-	var m = new MailMessage(inv, msgHtml, subject, inv.Email, isHtml, attachments, isTesting);
-	var res = await mgs.SendAsync(m);
-	Console.WriteLine($"Email: {inv.Email}; Result: {res.StatusCode}");
-}
-
+await runner.Go();
 
 Console.WriteLine("Done.");
 Console.ReadKey();

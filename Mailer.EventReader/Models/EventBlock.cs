@@ -1,0 +1,9 @@
+﻿namespace Mailer.EventReader.Models;
+
+public class EventBlock(string fromDomain)
+{
+	public List<EventItem> EventItems { get; set; } = [];
+	public string NextUrl { get; set; } = "";
+
+	public string FromDomain => fromDomain;
+}

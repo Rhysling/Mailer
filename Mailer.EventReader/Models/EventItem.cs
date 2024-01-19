@@ -1,13 +1,35 @@
 ﻿using Newtonsoft.Json;
-using System.Xml;
 
 namespace Mailer.EventReader.Models;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 #pragma warning disable IDE1006 // Naming Styles
-public class EventItem
+public class EventItem : CloudantDb.Models.ICloudantObj
 {
-	public string UID => timestamp.ToString("F7");
+
+	public EventItem()
+	{
+		tbl = "events";
+		_rev = null;
+	}
+
+	public string _id
+	{
+		get
+		{
+			return $"e-{timestamp.ToString("F7")}";
+		}
+
+		set
+		{
+			_ = value; //no op
+		}
+	}
+
+	public string? _rev { get; set; }
+	public string tbl { get; set; }
+
+	public string fromDomain { get; set; }
 
 	public MsgEnvelope envelope { get; set; }
 

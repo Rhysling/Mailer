@@ -4,10 +4,13 @@ using System;
 
 namespace Mailer.EventReader.Runs;
 
-public static class GetEvents
+public static class AddEvents
 {
 	public static async Task FromMailgun(App app, AppSettings appSettings)
 	{
+		//TODO:  Fix this ***
+
+
 		string outBasePath = $@"D:\UserData\Documents\AppDev\Mailer\Mailer.EventReader\Output\";
 		var mges = new MailgunEventService(app);
 		var mgep = new MailgunEventParser(appSettings.Mailgun.FromDomain);
@@ -20,7 +23,7 @@ public static class GetEvents
 		files.Add(res.json);
 		leb.Add(mgep.ParseBlock(res.json));
 
-	
+
 		while (true)
 		{
 			if (leb[i].EventItems.Count == 0) break;
@@ -46,36 +49,37 @@ public static class GetEvents
 
 	}
 
-	public static void FromFiles(AppSettings appSettings, long ts, int fileCount)
+	public static async Task FromFiles(App app, AppSettings appSettings, long ts, int fileCount)
 	{
-		string outBasePath = $@"D:\UserData\Documents\AppDev\Mailer\Mailer.EventReader\Output\";
+		string basePath = $@"D:\UserData\Documents\AppDev\Mailer\Mailer.EventReader\Output\";
 		var mgep = new MailgunEventParser(appSettings.Mailgun.FromDomain);
 
 		var files = new List<string>();
-		var leb = new List<EventBlock>();
-		var items = new List<EventItem>();
+		var eventBlocks = new List<EventBlock>();
+		var eventItems = new List<EventItem>();
 
 		Console.WriteLine($"TimeStamp:{ts} FileCount:{fileCount}.");
 
-		for (int i = 0; i < fileCount; i += 1) {
-			files.Add(File.ReadAllText($"{outBasePath}mgEvents_{ts}_{i}.json"));
-			leb.Add(mgep.ParseBlock(files[i]));
-			items.AddRange(leb[i].EventItems);
-			Console.WriteLine($"File:{i} ItemCount:{leb[i].EventItems.Count}.");
+		for (int i = 0; i < fileCount; i += 1)
+		{
+			files.Add(File.ReadAllText($"{basePath}mgEvents_{ts}_{i}.json"));
+			eventBlocks.Add(mgep.ParseBlock(files[i]));
+			eventItems.AddRange(eventBlocks[i].EventsWithFromDomain());
+			Console.WriteLine($"File:{i} ItemCount:{eventBlocks[i].EventItems.Count}.");
 		}
 
-		
-		var di = items.DistinctBy(a => a._id).ToList();
-		Console.WriteLine($"DistinctCount:{di.Count}.");
-	}
+		eventItems = eventItems.DistinctBy(a => a._id).ToList();
+		Console.WriteLine($"DistinctNewItemCount:{eventItems.Count}.");
 
-	public static async Task FromDb(App app)
-	{
 		using var db = new MailgunLogDb(app.DbService);
+		var idsInDb = await db.GetLatestEventIdsAsync(200);
+		Console.WriteLine($"EventsFoundInDb:{idsInDb.Count}.");
 
-		var evList = await db.GetLatestEventsAsync(100);
+		var newEventItems = eventItems.Where(a => !idsInDb.Contains(a._id)).ToList();
+		Console.WriteLine($"NewItemCount:{newEventItems.Count}.");
 
-		Console.WriteLine($"EventCount:{evList.Count}.");
+		if (newEventItems.Any())
+			_ = await db.SaveEventsAsync(newEventItems);
 	}
 
 }

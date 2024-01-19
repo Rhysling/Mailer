@@ -1,33 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Net.Mail;
-using System.Net.Mime;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Mailer.EventReader.Models;
 
 namespace Mailer.EventReader;
 
-public class MailgunEventService
+public class MailgunEventService(App app)
 {
-	private readonly HttpClient client;
-	private const string baseAddress = "https://api.mailgun.net/v3/{0}/events";
-
-	public MailgunEventService(string fromDomain, string authValue)
-	{
-		var socketsHandler = new SocketsHttpHandler
-		{
-			PooledConnectionLifetime = TimeSpan.FromMinutes(10),
-			PooledConnectionIdleTimeout = TimeSpan.FromMinutes(5),
-			MaxConnectionsPerServer = 10
-		};
-		client = new HttpClient(socketsHandler)
-		{
-			BaseAddress = new Uri(String.Format(baseAddress, fromDomain))
-		};
-		client.DefaultRequestHeaders.Add("Authorization", authValue);
-	}
+	private readonly HttpClient client = app.MgEventClient;
 
 	public async Task<(long ts, string json)> GetAsync()
 	{
@@ -46,8 +23,6 @@ public class MailgunEventService
 
 	public async Task<string> GetNextAsync(string url)
 	{
-		url = url.Replace(baseAddress, "");
-
 		using HttpResponseMessage res = await client.GetAsync(url).ConfigureAwait(false);
 
 		if (res.IsSuccessStatusCode)

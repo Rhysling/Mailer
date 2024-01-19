@@ -1,10 +1,14 @@
 ﻿using Newtonsoft.Json;
+using System.Xml;
 
 namespace Mailer.EventReader.Models;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable IDE1006 // Naming Styles
 public class EventItem
 {
+	public string UID => timestamp.ToString("F7");
+
 	public MsgEnvelope envelope { get; set; }
 
 	public double timestamp { get; set; }
@@ -63,7 +67,6 @@ public class MsgDeliveryStatus
 	public string mxhost { get; set; }
 }
 
-
 public class MsgInfo
 {
 	public int size { get; set; }
@@ -104,5 +107,5 @@ public class MsgGeolocation
 	public string country { get; set; }
 }
 
-
+#pragma warning restore IDE1006 // Naming Styles
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

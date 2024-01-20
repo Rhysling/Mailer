@@ -15,7 +15,8 @@ var app = new App(settings);
 //await GetEvents.FromMailgun(app, settings);
 //GetEvents.FromFiles(settings, 240118, 2);
 //await GetEvents.FromDb(app);
-await AddEvents.FromFiles(app, settings, 1705689393, 2);
+//await AddEvents.FromFiles(app, settings, 1705689393, 2);
+await AddEvents.Update(app);
 
 
 //string outPath = $@"D:\UserData\Documents\AppDev\Mailer\Mailer.EventReader\Output\mgEvents_comp.csv";

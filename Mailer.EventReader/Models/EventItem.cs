@@ -17,19 +17,32 @@ public class EventItem : CloudantDb.Models.ICloudantObj
 	{
 		get
 		{
-			return $"e-{timestamp.ToString("F7")}";
+			return $"e-{timestamp:F7}";
 		}
 
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
 		set
 		{
 			_ = value; //no op
 		}
+#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
 	}
 
 	public string? _rev { get; set; }
 	public string tbl { get; set; }
 
 	public string fromDomain { get; set; }
+	public string humanDate {
+		get
+		{
+			DateTime dt = DateTime.SpecifyKind(new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(Math.Round(timestamp)), DateTimeKind.Utc);
+			TimeZoneInfo pstZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
+			DateTime pstNow = TimeZoneInfo.ConvertTimeFromUtc(dt, pstZone);
+
+			return $"{pstNow:yyyy-MM-dd} - {pstNow.ToLongTimeString()} {(pstZone.IsDaylightSavingTime(pstNow) ? "PDT" : "PST")}";
+		}
+
+	}
 
 	public MsgEnvelope envelope { get; set; }
 

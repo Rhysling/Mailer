@@ -2,17 +2,10 @@
 
 namespace Mailer.EventReader.Db
 {
-	public class MailgunLogDb : IDisposable
+	public class MailgunLogDb(CloudantDb.Services.DbService dbIn) : IDisposable
 	{
 
-		private readonly CloudantDb.Services.DbService db;
-
-
-		public MailgunLogDb(CloudantDb.Services.DbService dbIn)
-		{
-			db = dbIn;
-		}
-
+		private readonly CloudantDb.Services.DbService db = dbIn;
 
 		public async Task<List<EventItem>> GetLatestEventsAsync(int count)
 		{

@@ -1,6 +1,5 @@
 ﻿using Mailer.EventReader.Db;
 using Mailer.EventReader.Models;
-using System;
 
 namespace Mailer.EventReader.Runs;
 
@@ -78,8 +77,26 @@ public static class AddEvents
 		var newEventItems = eventItems.Where(a => !idsInDb.Contains(a._id)).ToList();
 		Console.WriteLine($"NewItemCount:{newEventItems.Count}.");
 
-		if (newEventItems.Any())
+		if (newEventItems.Count != 0)
 			_ = await db.SaveEventsAsync(newEventItems);
 	}
 
+	public static async Task Update(App app)
+	{
+		using var db = new MailgunLogDb(app.DbService);
+		var items = await db.GetLatestEventsAsync(200);
+
+		if (items is null) return;
+
+		int i = 0;
+		foreach (var item in items)
+		{
+			Console.WriteLine($"{i:d3} Timestamp: {item.timestamp:f7} | Human: {item.humanDate}");
+			i += 1;
+		}
+
+		//items.RemoveAt(i - 1);
+
+		//_ = await db.SaveEventsAsync(items);
+	}
 }

@@ -1,6 +1,5 @@
 ﻿using Mailer.EventReader.Db;
 using Mailer.EventReader.Models;
-using System;
 
 namespace Mailer.EventReader.Runs;
 

@@ -1,0 +1,16 @@
+{
+  "_id": "_design/app",
+  "_rev": "9-6bc1da632fa8446b5cdf584224867220",
+  "views": {
+    "events-by-id": {
+      "map": "function (doc) {\n  if (doc.tbl && doc.tbl === \"events\")\n    emit(doc._id, null);\n}"
+    },
+    "events-by-messageid": {
+      "map": "function (doc) {\n  if (doc.tbl && (doc.tbl === \"events\") && doc.message && doc.message.headers && doc.message.headers[\"message-id\"]) {\n    emit(doc.message.headers[\"message-id\"], null);\n  }\n}"
+    },
+    "events-by-recipient": {
+      "map": "function (doc) {\n  if (doc.tbl && (doc.tbl === \"events\") && doc.recipient) {\n    emit(doc.recipient, null);\n  }\n}"
+    }
+  },
+  "language": "javascript"
+}

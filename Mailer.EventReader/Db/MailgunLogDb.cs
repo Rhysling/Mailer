@@ -40,6 +40,19 @@ namespace Mailer.EventReader.Db
 			return (await db.GetViewIdsValues("app", "events-by-id", qp).ConfigureAwait(false)).Select(a => a.id).ToList();
 		}
 
+		public async Task<List<EventItem>> GetEventsByMessageIdAsync(string messageId)
+		{
+			var ids = await db.GetIdsForKey("app", "events-by-messageid", messageId).ConfigureAwait(false);
+			return await db.GetItemsAsync<EventItem>(ids).ConfigureAwait(false);
+		}
+
+		public async Task<List<EventItem>> GetEventsByRecipientAsync(string emailAddress)
+		{
+			var ids = await db.GetIdsForKey("app", "events-by-recipient", emailAddress).ConfigureAwait(false);
+			return await db.GetItemsAsync<EventItem>(ids).ConfigureAwait(false);
+		}
+
+
 		public async Task<string> SaveEventAsync(EventItem item)
 		{
 			return await db.SaveItemAsync(item).ConfigureAwait(false);

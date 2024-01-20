@@ -77,4 +77,23 @@ public static class GetEvents
 		Console.WriteLine($"EventCount:{evList.Count}.");
 	}
 
+	public static async Task<List<EventItem>> FromDbByMessageId(App app, string messageId)
+	{
+		using var db = new MailgunLogDb(app.DbService);
+
+		var evList = await db.GetEventsByMessageIdAsync(messageId);
+
+		Console.WriteLine($"EventCount:{evList.Count}.");
+		return evList;
+	}
+
+	public static async Task<List<EventItem>> FromDbByRecipient(App app, string emailAddress)
+	{
+		using var db = new MailgunLogDb(app.DbService);
+
+		var evList = await db.GetEventsByRecipientAsync(emailAddress);
+
+		Console.WriteLine($"EventCount:{evList.Count}.");
+		return evList;
+	}
 }

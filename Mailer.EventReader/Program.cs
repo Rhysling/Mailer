@@ -17,7 +17,10 @@ var app = new App(settings);
 //await GetEvents.FromDb(app);
 //await AddEvents.FromFiles(app, settings, 1705689393, 2);
 //await AddEvents.UpdateAsync(app);
-await AddEvents.FromMailgunAsync(app, settings);
+//await AddEvents.FromMailgunAsync(app, settings);
+//_ = await GetEvents.FromDbByMessageId(app, "20240114152621.f0c2253667245b94@american-research-capital.net");
+_ = await GetEvents.FromDbByRecipient(app, "rpkummer@hotmail.com");
+
 
 
 //string outPath = $@"D:\UserData\Documents\AppDev\Mailer\Mailer.EventReader\Output\mgEvents_comp.csv";

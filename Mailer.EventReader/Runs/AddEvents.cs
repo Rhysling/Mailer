@@ -5,50 +5,39 @@ namespace Mailer.EventReader.Runs;
 
 public static class AddEvents
 {
-	public static async Task FromMailgun(App app, AppSettings appSettings)
+	public static async Task FromMailgunAsync(App app, AppSettings appSettings)
 	{
 		//TODO:  Fix this ***
+		// Grab IDs from db (last 300)
+		// Get most recent timestamp, deduct 20 min.
+		// Query MG for all after that ts
+		// Remove dupes
+		// Save to db
 
+		using var db = new MailgunLogDb(app.DbService);
+		var mges = new MailgunEventService(app, appSettings);
 
-		string outBasePath = $@"D:\UserData\Documents\AppDev\Mailer\Mailer.EventReader\Output\";
-		var mges = new MailgunEventService(app);
-		var mgep = new MailgunEventParser(appSettings.Mailgun.FromDomain);
+		var ids = await db.GetLatestEventIdsAsync(0, 300);
 
-		var files = new List<string>();
-		var leb = new List<EventBlock>();
-		int i = 0;
-
-		var res = await mges.GetAsync();
-		files.Add(res.json);
-		leb.Add(mgep.ParseBlock(res.json));
-
-
-		while (true)
+		long latestTs = 0;
+		if (ids.Count > 0)
 		{
-			if (leb[i].EventItems.Count == 0) break;
-			string json = await mges.GetNextAsync(leb[i].NextUrl);
-			files.Add(json);
-			leb.Add(mgep.ParseBlock(json));
-			i += 1;
+			latestTs = long.Parse(ids[0].Substring(2, 10)) - 20 * 60; // 20 min earlier
 		}
 
-		i = 0;
-		foreach (var f in files)
-		{
-			File.WriteAllText($"{outBasePath}mgEvents_{res.ts}_{i}.json", f);
-			i += 1;
-		}
+		var items = await mges.GetEventsAsync(latestTs);
+		var newEventItems = items.Where(a => !ids.Contains(a._id)).ToList();
 
+		Console.WriteLine($"Id count from db: {ids.Count}.");
+		Console.WriteLine($"Latest ts in db: {latestTs}.");
+		Console.WriteLine($"Mg event items since ts: {items.Count}.");
+		Console.WriteLine($"New event items: {newEventItems.Count}.");
 
-		//string path = $@"D:\UserData\Documents\AppDev\Mailer\Mailer.EventReader\Output\mgEvents_{res.ts}_0.json";
-
-		//string url = "https://api.mailgun.net/v3/american-research-capital.net/events/WzMseyJiIjoiMjAyNC0wMS0xOFQxNzo0OTozMy40ODUrMDA6MDAiLCJlIjoiMjAyNC0wMS0xM1QxNzo0OTozMy41MDgrMDA6MDAifSx7ImIiOiIyMDI0LTAxLTE0VDE3OjU4OjEwLjYxOSswMDowMCIsImUiOiIyMDI0LTAxLTEzVDE3OjQ5OjMzLjUwOCswMDowMCJ9LCJfZG9jI2ZpZEFVeUw3UUlXRzhXUHkyUGFIUFEiLFsiZiJdLG51bGwsW1siYWNjb3VudC5pZCIsIjU1MzI4OTEyNzhmYTE2NjNlNmZmNGE1OSJdLFsiZG9tYWluLm5hbWUiLCJhbWVyaWNhbi1yZXNlYXJjaC1jYXBpdGFsLm5ldCJdXSwxMDBd";
-		//var json = await mgs.GetNextAsync(url);
-		//string path = $@"D:\UserData\Documents\AppDev\Mailer\Mailer.EventReader\Output\mgEvents_next_1.json";
-
+		if (newEventItems.Count != 0)
+			_ = await db.SaveEventsAsync(newEventItems);
 	}
 
-	public static async Task FromFiles(App app, AppSettings appSettings, long ts, int fileCount)
+	public static async Task FromFilesAsync(App app, AppSettings appSettings, long ts, int fileCount)
 	{
 		string basePath = $@"D:\UserData\Documents\AppDev\Mailer\Mailer.EventReader\Output\";
 		var mgep = new MailgunEventParser(appSettings.Mailgun.FromDomain);
@@ -71,7 +60,7 @@ public static class AddEvents
 		Console.WriteLine($"DistinctNewItemCount:{eventItems.Count}.");
 
 		using var db = new MailgunLogDb(app.DbService);
-		var idsInDb = await db.GetLatestEventIdsAsync(200);
+		var idsInDb = await db.GetLatestEventIdsAsync(0, 200);
 		Console.WriteLine($"EventsFoundInDb:{idsInDb.Count}.");
 
 		var newEventItems = eventItems.Where(a => !idsInDb.Contains(a._id)).ToList();
@@ -81,7 +70,7 @@ public static class AddEvents
 			_ = await db.SaveEventsAsync(newEventItems);
 	}
 
-	public static async Task Update(App app)
+	public static async Task UpdateAsync(App app)
 	{
 		using var db = new MailgunLogDb(app.DbService);
 		var items = await db.GetLatestEventsAsync(200);

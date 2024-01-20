@@ -21,16 +21,21 @@ namespace Mailer.EventReader.Db
 			return await db.GetViewItemsAsync<EventItem>("app", "events-by-id", qp).ConfigureAwait(false);
 		}
 
-		public async Task<List<string>> GetLatestEventIdsAsync(int count)
+		public async Task<List<string>> GetLatestEventIdsAsync(long sinceTs, int count)
 		{
 			var qp = new CloudantDb.Models.QueryParams
 			{
 				Include_Docs = false,
 				Startkey = "e-999999",
-				Endkey = $"e-000000",
-				Descending = true,
-				Limit = count
+				Descending = true
 			};
+
+			if (sinceTs > 1.0)
+				qp.Endkey = $"e-{sinceTs:0000000000.0000000}";
+			//e-1705173789.9978132
+
+			if (count > 0)
+				qp.Limit = count;
 
 			return (await db.GetViewIdsValues("app", "events-by-id", qp).ConfigureAwait(false)).Select(a => a.id).ToList();
 		}

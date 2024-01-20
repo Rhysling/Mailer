@@ -8,14 +8,14 @@ public static class GetEvents
 	public static async Task FromMailgun(App app, AppSettings appSettings)
 	{
 		string outBasePath = $@"D:\UserData\Documents\AppDev\Mailer\Mailer.EventReader\Output\";
-		var mges = new MailgunEventService(app);
+		var mges = new MailgunEventService(app, appSettings);
 		var mgep = new MailgunEventParser(appSettings.Mailgun.FromDomain);
 
 		var files = new List<string>();
 		var leb = new List<EventBlock>();
 		int i = 0;
 
-		var res = await mges.GetAsync();
+		var res = await mges.GetSinceAsync(0);
 		files.Add(res.json);
 		leb.Add(mgep.ParseBlock(res.json));
 

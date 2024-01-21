@@ -19,7 +19,7 @@ namespace Mailer.EventReader.Utilities
 				""");
 			sb.AppendLine();
 			sb.AppendLine("""
-				"MessageId","TimeStamp","HumanDate","Recipient","Subject"
+				"MessageId","","","Recipient","Subject"
 				""");
 			sb.AppendLine("""
 				"","TimeStamp","HumanDate","EventType","GeoSummary"
@@ -29,7 +29,7 @@ namespace Mailer.EventReader.Utilities
 			foreach (MessageSummary s in list)
 			{
 				sb.AppendLine($"""
-				"{s.MessageId}","{s.TimeStamp}","{s.HumanDate}","{s.Recipient}","{s.Subject}"
+				"{s.MessageId}","","","{s.Recipient}","{s.Subject}"
 				""");
 
 				foreach(EventSummary e in s.EventSummaries)
@@ -44,7 +44,6 @@ namespace Mailer.EventReader.Utilities
 
 			return sb.ToString();
 		}
-
 
 	}
 }

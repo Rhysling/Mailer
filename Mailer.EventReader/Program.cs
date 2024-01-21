@@ -1,8 +1,8 @@
 ﻿using Mailer.EventReader;
 using Mailer.EventReader.Models;
 using Mailer.EventReader.Runs;
+using Mailer.EventReader.Utilities;
 using Microsoft.Extensions.Configuration;
-using System.Text;
 
 IConfigurationRoot config = new ConfigurationBuilder()
 	.AddJsonFile("appsettings.json")
@@ -19,23 +19,14 @@ var app = new App(settings);
 //await AddEvents.UpdateAsync(app);
 //await AddEvents.FromMailgunAsync(app, settings);
 //_ = await GetEvents.FromDbByMessageId(app, "20240114152621.f0c2253667245b94@american-research-capital.net");
-_ = await GetEvents.FromDbByRecipient(app, "rpkummer@hotmail.com");
+//_ = await GetEvents.FromDbByRecipient(app, "rpkummer@hotmail.com");
 
 
-
-//string outPath = $@"D:\UserData\Documents\AppDev\Mailer\Mailer.EventReader\Output\mgEvents_comp.csv";
-
-//var sb = new StringBuilder();
-//sb.AppendLine("""
-//	"TimeStamp","EventType","Recipient"
-//	""");
-
-//foreach (var item in eb.EventItems)
-//{
-//	sb.AppendLine($"{item.timestamp},\"{item.eventType ?? "missing"}\",\"{item.recipient ?? "missing"}\"");
-//}
-
-//File.WriteAllText(outPath, sb.ToString());
+string outPath = @"D:\yy\tp2\EventSummary.csv";
+var dbo = new DbOps(app);
+var msl = await dbo.GetMessageSummaries(null, null);
+string res = EventFormatter.MessageSummariesToCsv(msl);
+File.WriteAllText(outPath, res);
 
 
 app.MgEventClient.Dispose();

@@ -7,21 +7,46 @@ namespace Mailer.EventReader.Db
 
 		private readonly CloudantDb.Services.DbService db = dbIn;
 
-		public async Task<List<EventItem>> GetLatestEventsAsync(int count)
+		public async Task<List<EventItem>> GetEventsDescAsync(double startTs = 0D, double endTs = 0D, int count = 0)
 		{
 			var qp = new CloudantDb.Models.QueryParams
 			{
 				Include_Docs = true,
-				Startkey = "e-999999",
-				Endkey = $"e-000000",
 				Descending = true,
-				Limit = count
+				Startkey = (startTs > 1.0)
+				? $"e-{startTs:0000000000.0000000}"
+				: "e-999999",
+				//e-1705173789.9978132
+
+				Endkey = (endTs > 1.0)
+				? $"e-{endTs:0000000000.0000000}"
+				: "e-000000"
 			};
+
+			if (count > 0)
+				qp.Limit = count;
 
 			return await db.GetViewItemsAsync<EventItem>("app", "events-by-id", qp).ConfigureAwait(false);
 		}
 
-		public async Task<List<string>> GetLatestEventIdsAsync(long sinceTs, int count)
+		public async Task<List<EventItem>> GetEventsDescAsync(DateTime? startDt, DateTime? endDt = null, int count = 0)
+		{
+			var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+			double startTs = 0D;
+			if (startDt != null)
+				startTs = (startDt.Value.ToUniversalTime() - epoch).TotalSeconds;
+
+
+			double endTs = 0D;
+			if (endDt != null)
+				endTs = (endDt.Value.ToUniversalTime() - epoch).TotalSeconds;
+
+			return await GetEventsDescAsync(startTs, endTs, count);
+		}
+
+
+			public async Task<List<string>> GetLatestEventIdsAsync(long sinceTs, int count)
 		{
 			var qp = new CloudantDb.Models.QueryParams
 			{
@@ -30,7 +55,7 @@ namespace Mailer.EventReader.Db
 				Descending = true
 			};
 
-			if (sinceTs > 1.0)
+			if (sinceTs > 1L)
 				qp.Endkey = $"e-{sinceTs:0000000000.0000000}";
 			//e-1705173789.9978132
 

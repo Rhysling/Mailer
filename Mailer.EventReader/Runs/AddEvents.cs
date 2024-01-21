@@ -73,7 +73,7 @@ public static class AddEvents
 	public static async Task UpdateAsync(App app)
 	{
 		using var db = new MailgunLogDb(app.DbService);
-		var items = await db.GetLatestEventsAsync(200);
+		var items = await db.GetEventsDescAsync(0D, 0D, 200);
 
 		if (items is null) return;
 

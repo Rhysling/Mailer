@@ -72,7 +72,7 @@ public static class GetEvents
 	{
 		using var db = new MailgunLogDb(app.DbService);
 
-		var evList = await db.GetLatestEventsAsync(100);
+		var evList = await db.GetEventsDescAsync(0D, 0D, 100);
 
 		Console.WriteLine($"EventCount:{evList.Count}.");
 	}

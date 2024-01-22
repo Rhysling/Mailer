@@ -7,15 +7,19 @@ namespace Mailer.EventReader.Utilities
 	{
 		public static string MessageSummariesToCsv(List<MessageSummary> list)
 		{
+			var evSums = list.SelectMany(a => a.EventSummaries);
+			string fromDate = evSums.MinBy(a => a.TimeStamp)?.HumanDate ?? "none";
+			string toDate = evSums.MaxBy(a => a.TimeStamp)?.HumanDate ?? "none";
+
 			StringBuilder sb = new();
 
 			sb.AppendLine("\"MESSAGE SUMMARIES\"");
 			sb.AppendLine();
 			sb.AppendLine($"""
-				"From:","{list[0].HumanDate}"
+				"From:","{fromDate}"
 				""");
 			sb.AppendLine($"""
-				"To:","{list[^1].HumanDate}"
+				"To:","{toDate}"
 				""");
 			sb.AppendLine();
 			sb.AppendLine("""

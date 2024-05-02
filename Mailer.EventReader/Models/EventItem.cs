@@ -17,7 +17,7 @@ public class EventItem : CloudantDb.Models.ICloudantObj
 	{
 		get
 		{
-			return $"e-{timestamp:F7}";
+			return $"e-{timestamp:0000000000.0000000}";
 		}
 
 #pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).

@@ -2,7 +2,7 @@
 
 namespace Mailer.Runner.Run.TestMail;
 
-internal class RunTest(string fromDomain, string authValue)
+internal class RunTest(string fromDomain, string authValue, string? bcc = null)
 {
 	public async Task Go()
 	{
@@ -19,7 +19,7 @@ internal class RunTest(string fromDomain, string authValue)
 		var item = new TestModel { DummyName = "Bob Tester", Email = "rpkummer@hotmail.com" };
 
 		
-		var m = new MailMessage(item, msgHtml, subject, item.Email, isHtml, attachments: null, isTesting);
+		var m = new MailMessage(item, msgHtml, subject, item.Email, bcc, isHtml, attachments: null, isTesting);
 		var res = await mgs.SendAsync(m);
 		Console.WriteLine($"Email: {item.Email}; Result: {res.StatusCode}");
 	}

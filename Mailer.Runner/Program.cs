@@ -14,9 +14,11 @@ string fromDomain = settings?.Mailgun.FromDomain ?? throw new ArgumentNullExcept
 string authValue = settings?.Mailgun.AuthValue ?? throw new ArgumentNullException(nameof(authValue));
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
+string bcc = "bob@american-research-capital.com";
 
-//RunIqaInvestors runner = new(fromDomain, authValue);
-RunTest runner = new(fromDomain, authValue);
+
+RunIqaInvestors runner = new(fromDomain, authValue, bcc);
+//RunTest runner = new(fromDomain, authValue);
 
 await runner.Go();
 

@@ -2,7 +2,7 @@
 
 namespace Mailer.Runner.Run.IqaInvestors;
 
-internal class RunIqaInvestors(string fromDomain, string authValue)
+internal class RunIqaInvestors(string fromDomain, string authValue, string? bcc = null)
 {
 	public async Task Go()
 	{
@@ -25,7 +25,7 @@ internal class RunIqaInvestors(string fromDomain, string authValue)
 
 		foreach (var inv in investors)
 		{
-			var m = new MailMessage(inv, msgHtml, subject, inv.Email, isHtml, attachments, isTesting);
+			var m = new MailMessage(inv, msgHtml, subject, inv.Email, bcc, isHtml, attachments, isTesting);
 			var res = await mgs.SendAsync(m);
 			Console.WriteLine($"Email: {inv.Email}; Result: {res.StatusCode}");
 		}

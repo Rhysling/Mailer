@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
 
@@ -42,6 +43,9 @@ public class MailgunService
 				{ new StringContent(msg.Body, Encoding.UTF8, MediaTypeNames.Text.Plain), "html" }
 			};
 
+			if (msg.Bcc is not null)
+				multipartContent.Add(new StringContent(msg.Bcc, Encoding.UTF8, MediaTypeNames.Text.Plain), "bcc");
+
 			foreach (var a in msg.Attachments)
 			{
 				var fileContent = new StreamContent(File.OpenRead(a.FullPath));
@@ -59,6 +63,9 @@ public class MailgunService
 			{ "subject", msg.Subject },
 			{ "html", msg.Body }
 		};
+
+		if (msg.Bcc is not null)
+			parameters.Add("bcc", msg.Bcc);
 
 		using FormUrlEncodedContent encodedContent = new(parameters);
 		using HttpResponseMessage res = await client.PostAsync("", encodedContent).ConfigureAwait(false);

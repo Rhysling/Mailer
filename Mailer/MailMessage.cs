@@ -5,6 +5,7 @@ public class MailMessage
 	private readonly string body;
 	private readonly string subject;
 	private readonly string toEmails; // ',' delimited
+	private readonly string? bcc;
 	private readonly bool isHtml = true;
 	private readonly List<Attachment> attachments;
 
@@ -22,6 +23,7 @@ public class MailMessage
 		string template,
 		string subject,
 		string toEmails,
+		string? bcc = null,
 		bool isHtml = true,
 		List<Attachment>? attachments = null,
 		bool isTesting = false
@@ -38,6 +40,7 @@ public class MailMessage
 
 		this.subject = isTesting ? $"TESTING -- {subject}" : subject;
 		this.toEmails = toEmails;
+		this.bcc = bcc;
 		this.isHtml = isHtml;
 		this.attachments = attachments ?? [];
 
@@ -70,7 +73,9 @@ public class MailMessage
 	public string Body => body;
 
 	public string ToEmails => toEmails;
-	
+
+	public string? Bcc => bcc;
+
 	public string Subject => subject;
 
 	public bool IsHtml => isHtml;
